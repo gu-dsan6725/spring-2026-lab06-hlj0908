@@ -1,0 +1,93 @@
+warning: The `tool.uv.dev-dependencies` field (used in `pyproject.toml`) is deprecated and will be removed in a future release; use `dependency-groups.dev` instead
+2026-02-20 03:51:56,372,p10020,{test_client.py:55},INFO,Connecting to MCP server at http://127.0.0.1:8765/mcp
+2026-02-20 03:51:56,372,p10020,{test_client.py:56},INFO,Make sure your server is running: uv run python server.py
+2026-02-20 03:51:56,442,p10020,{_client.py:1740},INFO,HTTP Request: POST http://127.0.0.1:8765/mcp "HTTP/1.1 200 OK"
+2026-02-20 03:51:56,442,p10020,{streamable_http.py:181},INFO,Received session ID: f9d2993207344db682594bf1ea5c1c3d
+2026-02-20 03:51:56,443,p10020,{streamable_http.py:193},INFO,Negotiated protocol version: 2025-11-25
+2026-02-20 03:51:56,445,p10020,{test_client.py:63},INFO,Session initialized successfully
+2026-02-20 03:51:56,445,p10020,{test_client.py:33},INFO,
+2026-02-20 03:51:56,445,p10020,{test_client.py:34},INFO,============================================================
+2026-02-20 03:51:56,445,p10020,{test_client.py:35},INFO,TESTING RESOURCES
+2026-02-20 03:51:56,445,p10020,{test_client.py:36},INFO,============================================================
+2026-02-20 03:51:56,451,p10020,{_client.py:1740},INFO,HTTP Request: POST http://127.0.0.1:8765/mcp "HTTP/1.1 202 Accepted"
+2026-02-20 03:51:56,453,p10020,{_client.py:1740},INFO,HTTP Request: GET http://127.0.0.1:8765/mcp "HTTP/1.1 200 OK"
+2026-02-20 03:51:56,457,p10020,{_client.py:1740},INFO,HTTP Request: POST http://127.0.0.1:8765/mcp "HTTP/1.1 200 OK"
+2026-02-20 03:51:56,460,p10020,{test_client.py:73},INFO,Available resources: ['data://schema', 'data://countries']
+2026-02-20 03:51:56,460,p10020,{test_client.py:76},INFO,
+[TEST] data://schema
+2026-02-20 03:51:56,465,p10020,{_client.py:1740},INFO,HTTP Request: POST http://127.0.0.1:8765/mcp "HTTP/1.1 200 OK"
+2026-02-20 03:51:56,470,p10020,{test_client.py:80},INFO,  Result: {
+  "countryiso3code": "String",
+  "country": "String",
+  "indicator_id": "String",
+  "indicator_name": "String",
+  "year": "Int64",
+  "value": "Float64"
+}
+2026-02-20 03:51:56,470,p10020,{test_client.py:83},INFO,  Status: PASS
+2026-02-20 03:51:56,470,p10020,{test_client.py:89},INFO,
+[TEST] data://countries
+2026-02-20 03:51:56,475,p10020,{_client.py:1740},INFO,HTTP Request: POST http://127.0.0.1:8765/mcp "HTTP/1.1 200 OK"
+2026-02-20 03:51:56,483,p10020,{test_client.py:95},INFO,  Result: [{"countryiso3code":"ABW","country":"Aruba"},{"countryiso3code":"AFE","country":"Africa Eastern and Southern"},{"countryiso3code":"AFG","country":"Afghanistan"},{"countryiso3code":"AFW","country":"Afr...
+2026-02-20 03:51:56,484,p10020,{test_client.py:100},INFO,  Found 261 countries
+2026-02-20 03:51:56,484,p10020,{test_client.py:101},INFO,  Status: PASS
+2026-02-20 03:51:56,484,p10020,{test_client.py:107},INFO,
+[TEST] data://indicators/USA
+2026-02-20 03:51:56,489,p10020,{_client.py:1740},INFO,HTTP Request: POST http://127.0.0.1:8765/mcp "HTTP/1.1 200 OK"
+2026-02-20 03:51:56,495,p10020,{test_client.py:113},INFO,  Result: [{"countryiso3code":"USA","country":"United States","indicator_id":"NY.GDP.PCAP.CD","indicator_name":"GDP per capita (current US$)","year":2018,"value":62499.8744390068},{"countryiso3code":"USA","coun...
+2026-02-20 03:51:56,495,p10020,{test_client.py:116},INFO,  Found 18 records
+2026-02-20 03:51:56,495,p10020,{test_client.py:117},INFO,  Status: PASS
+2026-02-20 03:51:56,495,p10020,{test_client.py:33},INFO,
+2026-02-20 03:51:56,495,p10020,{test_client.py:34},INFO,============================================================
+2026-02-20 03:51:56,495,p10020,{test_client.py:35},INFO,TESTING TOOLS
+2026-02-20 03:51:56,495,p10020,{test_client.py:36},INFO,============================================================
+2026-02-20 03:51:56,500,p10020,{_client.py:1740},INFO,HTTP Request: POST http://127.0.0.1:8765/mcp "HTTP/1.1 200 OK"
+2026-02-20 03:51:56,502,p10020,{test_client.py:130},INFO,Available tools: ['get_country_info', 'get_live_indicator', 'compare_countries']
+2026-02-20 03:51:56,502,p10020,{test_client.py:133},INFO,
+[TEST] get_country_info('USA')
+2026-02-20 03:51:56,508,p10020,{_client.py:1740},INFO,HTTP Request: POST http://127.0.0.1:8765/mcp "HTTP/1.1 200 OK"
+2026-02-20 03:51:56,578,p10020,{test_client.py:142},INFO,  Result: {
+  "name": "United States",
+  "capital": "Washington, D.C.",
+  "region": "Americas",
+  "subregion": "North America",
+  "languages": [
+    "English"
+  ],
+  "currencies": [
+    "USD"
+  ],
+  "population": 340110988,
+  "flag": "🇺🇸"
+}
+2026-02-20 03:51:56,578,p10020,{test_client.py:147},INFO,  Status: PASS
+2026-02-20 03:51:56,578,p10020,{test_client.py:153},INFO,
+[TEST] get_live_indicator('USA', 'NY.GDP.PCAP.CD', 2022)
+2026-02-20 03:51:56,583,p10020,{_client.py:1740},INFO,HTTP Request: POST http://127.0.0.1:8765/mcp "HTTP/1.1 200 OK"
+2026-02-20 03:51:57,025,p10020,{test_client.py:166},INFO,  Result: {
+  "country": "US",
+  "country_name": "United States",
+  "indicator": "NY.GDP.PCAP.CD",
+  "indicator_name": "GDP per capita (current US$)",
+  "year": 2022,
+  "value": 76657.2488844403
+}
+2026-02-20 03:51:57,025,p10020,{test_client.py:167},INFO,  Status: PASS
+2026-02-20 03:51:57,025,p10020,{test_client.py:173},INFO,
+[TEST] compare_countries(['USA', 'CHN', 'DEU'], 'SP.POP.TOTL', 2022)
+2026-02-20 03:51:57,031,p10020,{_client.py:1740},INFO,HTTP Request: POST http://127.0.0.1:8765/mcp "HTTP/1.1 200 OK"
+2026-02-20 03:51:57,366,p10020,{test_client.py:186},INFO,  Result: {
+  "country": "US",
+  "country_name": "United States",
+  "indicator": "SP.POP.TOTL",
+  "indicator_name": "Population, total",
+  "year": 2022,
+  "value": 334017321
+}
+2026-02-20 03:51:57,367,p10020,{test_client.py:191},INFO,  Status: PASS
+2026-02-20 03:51:57,367,p10020,{test_client.py:33},INFO,
+2026-02-20 03:51:57,367,p10020,{test_client.py:34},INFO,============================================================
+2026-02-20 03:51:57,367,p10020,{test_client.py:35},INFO,TEST SUMMARY
+2026-02-20 03:51:57,367,p10020,{test_client.py:36},INFO,============================================================
+2026-02-20 03:51:57,367,p10020,{test_client.py:202},INFO,ALL TESTS PASSED
+2026-02-20 03:51:57,371,p10020,{_client.py:1740},INFO,HTTP Request: DELETE http://127.0.0.1:8765/mcp "HTTP/1.1 200 OK"

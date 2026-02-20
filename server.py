@@ -7,6 +7,7 @@ An MCP server that exposes:
 
 Transport: Streamable HTTP on port 8765
 """
+
 import json
 import logging
 from pathlib import Path
@@ -25,14 +26,12 @@ DATA_FILE: Path = Path(__file__).parent / "data" / "world_bank_indicators.csv"
 HOST: str = "127.0.0.1"
 PORT: int = 8765
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s,p%(process)s,{%(filename)s:%(lineno)d},%(levelname)s,%(message)s",
 )
 logger = logging.getLogger(__name__)
 
-# Initialize MCP server
 mcp = FastMCP(
     "world-bank-server",
     host=HOST,
@@ -86,11 +85,7 @@ def _fetch_world_bank_indicator(
 
 @mcp.resource("data://schema")
 def get_schema() -> str:
-    """
-    Return the schema of the World Bank dataset.
-
-    This resource is provided as an example - it's already implemented.
-    """
+    """Return the schema of the World Bank dataset."""
     df = _load_data()
     schema_info = {col: str(dtype) for col, dtype in zip(df.columns, df.dtypes)}
     return json.dumps(schema_info, indent=2)
@@ -98,50 +93,35 @@ def get_schema() -> str:
 
 @mcp.resource("data://countries")
 def get_countries() -> str:
-    """
-    List all unique countries in the dataset.
-
-    TODO: Implement this resource.
-
-    Hints:
-    - Use _load_data() to get the DataFrame
-    - Use df.select() to pick relevant columns (countryiso3code, country)
-    - Use df.unique() to get unique values
-    - Return as JSON string using json.dumps() or df.write_json()
-
-    Expected output format:
-    [
-        {"countryiso3code": "USA", "country": "United States"},
-        {"countryiso3code": "CHN", "country": "China"},
-        ...
-    ]
-    """
+    """List all unique countries in the dataset."""
     df = _load_data()
-    # TODO: Implement - return unique country codes and names as JSON string
-    pass
+
+    countries_df = (
+        df
+        .select(["countryiso3code", "country"])
+        .unique()
+        .sort("countryiso3code")
+    )
+
+    return countries_df.write_json()
 
 
 @mcp.resource("data://indicators/{country_code}")
 def get_country_indicators(country_code: str) -> str:
-    """
-    Get all indicators for a specific country from local data.
-
-    TODO: Implement this resource.
-
-    Args:
-        country_code: ISO 3166-1 alpha-3 country code (e.g., "USA", "CHN", "DEU")
-
-    Hints:
-    - Use _load_data() to get the DataFrame
-    - Use df.filter(pl.col("countryiso3code") == country_code) to filter
-    - Return as JSON string
-    - Handle case where country_code is not found (return error message)
-
-    Expected output: JSON array of indicator records for that country
-    """
+    """Get all indicators for a specific country from local data."""
     df = _load_data()
-    # TODO: Implement - filter by country and return as JSON string
-    pass
+
+    filtered_df = df.filter(
+        pl.col("countryiso3code") == country_code.upper()
+    )
+
+    if filtered_df.is_empty():
+        return json.dumps(
+            {"error": f"No data found for country code: {country_code}"},
+            indent=2
+        )
+
+    return filtered_df.write_json()
 
 
 # =============================================================================
@@ -150,43 +130,28 @@ def get_country_indicators(country_code: str) -> str:
 
 @mcp.tool()
 def get_country_info(country_code: str) -> dict:
-    """
-    Fetch detailed information about a country from REST Countries API.
-
-    TODO: Implement this tool.
-
-    Args:
-        country_code: ISO 3166-1 alpha-2 or alpha-3 country code (e.g., "US", "USA", "DE")
-
-    Returns:
-        Dictionary with country information including:
-        - name: Common name of the country
-        - capital: Capital city
-        - region: Geographic region (e.g., "Americas", "Europe")
-        - subregion: Geographic subregion
-        - languages: List of official languages
-        - currencies: List of currency codes
-        - population: Current population
-        - flag: Flag emoji
-
-    Hints:
-    - Use _fetch_rest_countries(country_code) to get raw API data
-    - Extract the relevant fields from the response
-    - Handle errors gracefully (invalid country code, API failure)
-
-    API Response structure (key fields):
-    - name.common: "United States"
-    - capital: ["Washington, D.C."]
-    - region: "Americas"
-    - subregion: "North America"
-    - languages: {"eng": "English"}
-    - currencies: {"USD": {"name": "United States dollar", ...}}
-    - population: 331002651
-    - flag: "🇺🇸"
-    """
+    """Fetch detailed information about a country from REST Countries API."""
     logger.info(f"Fetching country info for: {country_code}")
-    # TODO: Implement using _fetch_rest_countries()
-    pass
+
+    try:
+        data = _fetch_rest_countries(country_code)
+    except httpx.HTTPStatusError:
+        logger.error(f"Invalid country code: {country_code}")
+        return {"error": f"Country not found: {country_code}"}
+    except Exception as e:
+        logger.error(f"REST Countries API failure: {e}")
+        return {"error": "Failed to fetch country information"}
+
+    return {
+        "name": data.get("name", {}).get("common"),
+        "capital": data.get("capital", [None])[0],
+        "region": data.get("region"),
+        "subregion": data.get("subregion"),
+        "languages": list(data.get("languages", {}).values()),
+        "currencies": list(data.get("currencies", {}).keys()),
+        "population": data.get("population"),
+        "flag": data.get("flag"),
+    }
 
 
 @mcp.tool()
@@ -195,39 +160,33 @@ def get_live_indicator(
     indicator: str,
     year: int = 2022,
 ) -> dict:
-    """
-    Fetch a specific indicator value from the World Bank API.
-
-    TODO: Implement this tool.
-
-    Args:
-        country_code: ISO 3166-1 alpha-2 or alpha-3 country code
-        indicator: World Bank indicator ID (e.g., "NY.GDP.PCAP.CD" for GDP per capita)
-        year: Year to fetch data for (default: 2022)
-
-    Returns:
-        Dictionary with:
-        - country: Country code
-        - country_name: Full country name
-        - indicator: Indicator ID
-        - indicator_name: Human-readable indicator name
-        - year: Year of data
-        - value: The indicator value
-
-    Common indicators:
-        - NY.GDP.PCAP.CD: GDP per capita (current US$)
-        - SP.POP.TOTL: Total population
-        - SP.DYN.LE00.IN: Life expectancy at birth
-        - SE.ADT.LITR.ZS: Adult literacy rate
-
-    Hints:
-    - Use _fetch_world_bank_indicator(country_code, indicator, year)
-    - The API returns a list; find the entry matching the requested year
-    - Handle case where no data exists for that year
-    """
+    """Fetch a specific indicator value from the World Bank API."""
     logger.info(f"Fetching {indicator} for {country_code} in {year}")
-    # TODO: Implement using _fetch_world_bank_indicator()
-    pass
+
+    try:
+        results = _fetch_world_bank_indicator(country_code, indicator, year)
+    except Exception as e:
+        logger.error(f"World Bank API failure: {e}")
+        return {"error": "World Bank API request failed"}
+
+    if not results:
+        return {
+            "country": country_code,
+            "indicator": indicator,
+            "year": year,
+            "value": None,
+        }
+
+    record = results[0]
+
+    return {
+        "country": record.get("country", {}).get("id"),
+        "country_name": record.get("country", {}).get("value"),
+        "indicator": record.get("indicator", {}).get("id"),
+        "indicator_name": record.get("indicator", {}).get("value"),
+        "year": int(record.get("date")),
+        "value": record.get("value"),
+    }
 
 
 @mcp.tool()
@@ -236,33 +195,25 @@ def compare_countries(
     indicator: str,
     year: int = 2022,
 ) -> list[dict]:
-    """
-    Compare an indicator across multiple countries.
-
-    TODO: Implement this tool.
-
-    Args:
-        country_codes: List of ISO country codes to compare (e.g., ["USA", "CHN", "DEU"])
-        indicator: World Bank indicator ID to compare
-        year: Year to fetch data for
-
-    Returns:
-        List of dictionaries, one per country, each containing:
-        - country: Country code
-        - country_name: Full country name
-        - indicator: Indicator ID
-        - year: Year
-        - value: The indicator value (or None if not available)
-
-    Hints:
-    - Loop through country_codes and call get_live_indicator() for each
-    - Collect results into a list
-    - Handle errors for individual countries (don't fail the whole request)
-    """
+    """Compare an indicator across multiple countries."""
     logger.info(f"Comparing {indicator} for countries: {country_codes}")
-    # TODO: Implement - call get_live_indicator for each country
-    pass
 
+    results = []
+
+    for code in country_codes:
+        try:
+            result = get_live_indicator(code, indicator, year)
+            results.append(result)
+        except Exception as e:
+            logger.error(f"Comparison failed for {code}: {e}")
+            results.append({
+                "country": code,
+                "indicator": indicator,
+                "year": year,
+                "value": None,
+            })
+
+    return results
 
 # =============================================================================
 # MAIN

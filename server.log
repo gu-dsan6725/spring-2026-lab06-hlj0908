@@ -1,0 +1,9 @@
+warning: The `tool.uv.dev-dependencies` field (used in `pyproject.toml`) is deprecated and will be removed in a future release; use `dependency-groups.dev` instead
+2026-02-20 04:09:47,483,p13866,{server.py:223},INFO,Starting World Bank MCP Server on http://127.0.0.1:8765/mcp
+2026-02-20 04:09:47,484,p13866,{server.py:224},INFO,Connect with MCP Inspector or test client at http://127.0.0.1:8765/mcp
+2026-02-20 04:09:47,484,p13866,{server.py:225},INFO,Press Ctrl+C to stop
+INFO:     Started server process [13866]
+INFO:     Waiting for application startup.
+2026-02-20 04:09:47,515,p13866,{streamable_http_manager.py:116},INFO,StreamableHTTP session manager started
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8765 (Press CTRL+C to quit)
